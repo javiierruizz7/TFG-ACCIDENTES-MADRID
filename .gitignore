@@ -218,3 +218,17 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Proyecto TFG
+# Datos (se versionan solo los .gitkeep)
+data/raw/*
+data/interim/*
+!data/*/.gitkeep
+*.parquet
+*.csv
+*.zip
+*:Zone.Identifier
+.ruff_cache/
+
+AGENTS.md
+docs/
