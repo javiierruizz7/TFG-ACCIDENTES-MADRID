@@ -223,6 +223,7 @@ __marimo__/
 # Datos (se versionan solo los .gitkeep)
 data/raw/*
 data/interim/*
+data/external/*
 !data/*/.gitkeep
 *.parquet
 *.csv
