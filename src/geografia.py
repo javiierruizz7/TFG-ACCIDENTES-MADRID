@@ -75,3 +75,27 @@ def cruce_espacial(expedientes: pd.DataFrame) -> pd.DataFrame:
     out["distrito_geo"] = pd.array([pd.NA] * len(out), dtype="Int16")
     out.loc[cruce.index, "distrito_geo"] = cruce["COD_DIS"]
     return out
+
+
+def informe_perdidas(cruce: pd.DataFrame) -> pd.DataFrame:
+    """Tabla por año: expedientes totales, excluidos por no tener coordenadas, los que se
+    conservan aunque caigan fuera del límite (borde) y los que quedan en `accidents_clean`."""
+    estado = cruce["sin_coord"].map({True: "sin_coordenadas", False: "con_coordenadas"})
+    tabla = pd.DataFrame({"expedientes": cruce.groupby("año").size()})
+    tabla["excluidos_sin_coordenadas"] = (
+        cruce[cruce["sin_coord"]].groupby("año").size().reindex(tabla.index, fill_value=0)
+    )
+    fuera = cruce["dentro_municipio"].eq(False)
+    tabla["conservados_fuera_de_limite"] = fuera.groupby(cruce["año"]).sum()
+    tabla["en_accidents_clean"] = tabla["expedientes"] - tabla["excluidos_sin_coordenadas"]
+    tabla.loc["total"] = tabla.sum()
+    assert estado.notna().all()
+    return tabla.astype(int)
+
+
+def accidentes_limpios(cruce: pd.DataFrame) -> pd.DataFrame:
+    """Expedientes con coordenadas: excluye los que no tienen y conserva los de borde
+    (`dentro_municipio=False`, con su `distancia_limite_m`). Deja el distrito geográfico."""
+    out = cruce[~cruce["sin_coord"]].drop(columns="sin_coord").reset_index(drop=True)
+    out["dentro_municipio"] = out["dentro_municipio"].astype(bool)
+    return out
