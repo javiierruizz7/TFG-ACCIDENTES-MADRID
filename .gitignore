@@ -224,6 +224,7 @@ __marimo__/
 data/raw/*
 data/interim/*
 data/external/*
+data/processed/*
 !data/*/.gitkeep
 *.parquet
 *.csv
